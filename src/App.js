@@ -1,24 +1,27 @@
 import './App.css';
 import React from 'react';
-import {Routes, Route, Link} from "react-router-dom";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Routes, Route } from 'react-router-dom';
 import LoginForm from './components/Login-form';
 import Register from './components/Register';
-import ServiceProvider from './components/serviceProvider';
-import Headers from './components/headers/headers';
+import ServiceProviderForm from './components/serviceProvider';
+import GalleryForm from './components/gallery';
+import Header from './components/headers/headers';
+
 
 export default function App() {
   return (
-    <div className="App">
-      <h1>Lens Locater</h1> 
-      <Link to="/Login-form">Login</Link> |{' '}
-      <Link to="/Register">Register</Link>
-
-      <Routes>
-        <Route path="/Login-form" element={<LoginForm/>}></Route>
-        <Route path="/Register" element={<Register/>}></Route>
-        <Route path="/serviceProvider" element={<ServiceProvider/>}></Route>
-      </Routes>
-    </div>
+      <div className="App">
+        <Header />
+        <div className="container mt-4">
+          <Routes>
+            <Route path="/Login-form" element={<LoginForm />} />
+            <Route path="/Register" element={<Register />} />
+            <Route path="/serviceProvider" element={<ServiceProviderForm/>}/>
+            <Route path='/gallery' element={<GalleryForm/>}/>
+          </Routes>
+        </div>
+      </div>
   );
 }
 

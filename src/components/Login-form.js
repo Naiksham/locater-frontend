@@ -24,6 +24,7 @@ export default function LoginForm(){
         } else if(!validator.isEmail(form.email)){
             errors.email = 'Invalid Email Format'
         }
+        
 
         if(form.password.trim().length<8 || form.password.trim().length>20){
             errors.password = 'Invalid Password Length'
@@ -45,14 +46,18 @@ export default function LoginForm(){
                         Authorization : localStorage.getItem('token')
                     }
                 })
-                console.log(account)
-                handleLogin(account.data)
-                // navigate('/serviceProvice')
-                console.log(response.data)
+                if (account.data.role === 'serviceProvider') {
+                    console.log(response.data)
+                    handleLogin(account.data);
+                    navigate('/serviceProvider');
+                } else {
+                    navigate('/')
+                }
             } catch(err){
                 console.log(err)
-                setForm({...form, clientErrors: errors})
             }
+        } else{
+            setForm({...form, clientErrors: errors})
         }
     }
 
@@ -81,7 +86,7 @@ export default function LoginForm(){
     }
 
     return(
-        <div>
+        <div className="form-group">
             <h2>Login</h2>
             {form.serverErrors && displayErrors()}
             <form onSubmit={handleSubmit}>
@@ -92,7 +97,9 @@ export default function LoginForm(){
                     onChange={handleChange}
                     name="email"
                     id="email"
+                    className="form-control"
                 />
+                <br/>
                 {form.clientErrors.email && <span>{form.clientErrors.email}</span>}
                 <br/>
 
@@ -103,7 +110,9 @@ export default function LoginForm(){
                     onChange={handleChange}
                     name="password"
                     id="password"
+                    className="form-control"
                 />
+                <br/>
                 {form.clientErrors.password && <span>{form.clientErrors.password}</span>}
                 <br/>
 

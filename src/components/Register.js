@@ -69,8 +69,8 @@ export default function Register(){
     }
 
     return(
-        <div>
-            <h2>Register With Us</h2>
+        <div className='form-group'>
+            <h2>Sign Up</h2>
 
             {serverErrors && (
                 <div>
@@ -90,6 +90,7 @@ export default function Register(){
                     value={username}
                     onChange={e=>{setUsername(e.target.value)}}
                     id='username'
+                    className="form-control"
                 />
                 {clientErrors.username && <span>{clientErrors.username}</span>}
                 <br/>
@@ -101,6 +102,7 @@ export default function Register(){
                     value={email}
                     onChange={e=>{setEmail(e.target.value)}}
                     id='email'
+                    className="form-control"
                 />
                 {clientErrors.email && <span>{clientErrors.email}</span>}
                 <br/>
@@ -111,6 +113,7 @@ export default function Register(){
                     value={password}
                     onChange={e=>{setPassword(e.target.value)}}
                     id='password'
+                    className="form-control"
                 />
                 {clientErrors.password && <span>{clientErrors.password}</span>}
                 <br/>
@@ -120,12 +123,14 @@ export default function Register(){
                         value={role} 
                         name="role" 
                         onChange={e=>{setRole(e.target.value)}}
+                        className="form-control"
                     >
                         <option value="">Select</option>
                         <option value="serviceProvider">Service Provider</option>
                         <option value="customer">Customer</option>
                     </select>
                     {clientErrors.role && <span>{clientErrors.role}</span>}
+                    <br/>
                     <br/>
                 
                 <input type='submit'/>
