@@ -1,50 +1,65 @@
-import { useState } from "react"
-import axios from "axios"
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-export default function GalleryForm() {
+const GalleryForm = () => {
+    const navigate = useNavigate()
     const [form, setForm] = useState({
         title: '',
         galleryImg: null,
         galleryVideo: null
-    })
+    });
+    const [error, setError] = useState(null);
 
-    const errors = {}
+    const handleChange = (e) => {
+        const { name, type, files, value } = e.target;
+        const newValue = type === 'file' ? files[0] : value;
+        setForm({ ...form, [name]: newValue });
+    };
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
-        const formData = {
-            title: form.title,
-            galleryImg: form.galleryImg,
-            galleryVideo: form.galleryVideo
-        }
+        e.preventDefault();
 
-        if (Object.keys(errors).length === 0) {
-            try {
-                const response = await axios.post('http://localhost:3060/api/galleries', formData, {
-                    headers: {
-                        Authorization: localStorage.getItem('token')
-                    }
-                })
-                console.log(response.data)
-            } catch (err) {
-                console.log(err)
+        const formData = new FormData();
+        formData.append('title', form.title);
+        formData.append('galleryImg', form.galleryImg);
+        formData.append('galleryVideo', form.galleryVideo);
+
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error("Token not found in local storage");
             }
-        } else {
-            setForm({ ...form })
-        }
-    }
+ console.log (token)
+            const config = {
+                headers: {
+                    Authorization:  token,
+                   //Authorization : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NTQyMmZkNDM2YzkwZWUxYWRlM2M1NCIsInJvbGUiOiJzZXJ2aWNlUHJvdmlkZXIiLCJpYXQiOjE3MTY5MjA1MTcsImV4cCI6MTcxNzUyNTMxN30.IVXHggbAepRnJqzS3-AZBBqHbgAXO8Kexq01X-0HnG8",
+                    'Content-Type': 'multipart/form-data'
+                }
+            };
 
-    const handleChange = async (e) => {
-        const { name, value, type } = e.target;
-        const newValue = type === 'file' ? e.target.files[0] : value;
-        setForm({ ...form, [name]: newValue });
-    }
+            const response = await axios.post('http://localhost:3060/api/galleries', formData, config);
+           navigate(`/service-provider-details/${response.data.serviceProviderId}`)
+
+            console.log("Upload successful:", response.data);
+            setForm({
+                title: '',
+                galleryImg: null,
+                galleryVideo: null
+            });
+            setError(null); // Reset any previous errors
+        } catch (err) {
+            console.error("Error uploading media:", err);
+            setError("Failed to upload media. Please try again.");
+        }
+    };
 
     return (
-        <div className="from-group">
+        <div className="form-group">
             <h3>Gallery Form</h3>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
 
-            <br/>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="title"><b>Add Title</b></label><br />
                 <input
@@ -57,34 +72,32 @@ export default function GalleryForm() {
                 />
                 <br />
 
-                <br/>
-                <label htmlFor="galleryImg"><b>Add Images</b></label><br/>
+                <label htmlFor="galleryImg"><b>Add Images</b></label><br />
                 <input
                     type="file"
-                    placeholder='ex:jpeg/jpg/png'
+                    accept="image/jpeg, image/png"
                     className="form-control"
                     id="galleryImg"
                     name="galleryImg"
                     onChange={handleChange}
                 />
-                <br/>
+                <br />
 
-                <br/>
-                <label htmlFor="galleryVideo"><b>Add Video</b></label><br/>
+                <label htmlFor="galleryVideo"><b>Add Video</b></label><br />
                 <input
                     type="file"
-                    placeholder='ex:mp4'
+                    accept="video/mp4"
                     className="form-control"
                     id="galleryVideo"
                     name="galleryVideo"
                     onChange={handleChange}
                 />
-                <br/>
+                <br />
 
-                <br/>
-                <input type="Submit"/>
+                <input type="submit" value="Submit" />
             </form>
         </div>
+    );
+};
 
-    )
-}
+export default GalleryForm;

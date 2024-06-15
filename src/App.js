@@ -1,3 +1,4 @@
+
 import './App.css';
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -7,6 +8,8 @@ import Register from './components/Register';
 import ServiceProviderForm from './components/serviceProvider';
 import GalleryForm from './components/gallery';
 import Header from './components/headers/headers';
+import ServiceProviderDetails from './components/serviceProviderDetails';
+
 
 
 export default function App() {
@@ -19,6 +22,7 @@ export default function App() {
             <Route path="/Register" element={<Register />} />
             <Route path="/serviceProvider" element={<ServiceProviderForm/>}/>
             <Route path='/gallery' element={<GalleryForm/>}/>
+            <Route path="/service-provider-details/:id" element={<ServiceProviderDetails/>} />
           </Routes>
         </div>
       </div>
