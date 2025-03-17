@@ -9,7 +9,8 @@ import ServiceProviderForm from './components/serviceProvider';
 import GalleryForm from './components/gallery';
 import Header from './components/headers/headers';
 import ServiceProviderDetails from './components/serviceProviderDetails';
-
+import CustomerPage from './components/customerPage';
+import InvoicePage from './components/InvoicePage';
 
 
 export default function App() {
@@ -21,8 +22,12 @@ export default function App() {
             <Route path="/Login-form" element={<LoginForm />} />
             <Route path="/Register" element={<Register />} />
             <Route path="/serviceProvider" element={<ServiceProviderForm/>}/>
+
             <Route path='/gallery' element={<GalleryForm/>}/>
             <Route path="/service-provider-details/:id" element={<ServiceProviderDetails/>} />
+            <Route path="/customer/:id" element={<CustomerPage />} />
+            <Route path="/invoice/:id" element={<InvoicePage />} />
+
           </Routes>
         </div>
       </div>

@@ -1,232 +1,182 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import axios from "axios"
-import Select from "react-select"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import Select from "react-select";
+import { Container, Form, Button, Row, Col } from "react-bootstrap";
 
 export default function ServiceProviderForm() {
-    const navigate = useNavigate()
-    const [form, setForm] = useState({
-        mobile: '',
-        serviceType: [''],
-        categories: [],
-        socialLinks: '',
-        location: '',
-        name: '',
-        amount: ''
-    })
+  const navigate = useNavigate();
+  const [form, setForm] = useState({
+    mobile: "",
+    serviceType: [""],
+    categories: [],
+    socialLinks: "",
+    location: "",
+    name: "",
+    amount: "",
+  });
 
-    const errors = {}
+  const errors = {};
 
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-        const formData = {
-            mobile : form.mobile,
-            serviceType : form.serviceType,
-            // name : form.categories.name,
-            // amount : form.categories.amount,
-            categories:[{name:form.categories[0].name , amount:Number(form.categories[1].amount)}],
-            socialLinks : form.socialLinks,
-            location : form.location
-        }
-
-        if (Object.keys(errors).length === 0) {
-            console.log('formdata' , formData)
-            try {
-                const response = await axios.post('http://localhost:3060/api/serviceProvider', formData, {
-                    headers: {
-                        Authorization: localStorage.getItem('token')
-                    }
-                })
-                console.log(response.data)
-                navigate('/gallery')
-            } catch (err) {
-                console.log(err)
-            }
-        } else {
-            setForm({ ...form })
-        }
-    }
-
-
-    const serviceTypeOptions = [
-        { value: 'photography', label: 'Photography' },
-        { value: 'videography', label: 'Videography' }
-    ];
-
-    const handleServiceType = (selectedOptions) => {
-        console.log(selectedOptions)
-        const values = selectedOptions ? selectedOptions.map((option) => option.value) : [];
-        setForm({ ...form, serviceType: values });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = {
+      mobile: form.mobile,
+      serviceType: form.serviceType,
+      categories: [{ name: form.categories[0]?.name, amount: Number(form.categories[1]?.amount) }],
+      socialLinks: form.socialLinks,
+      location: form.location,
     };
 
-    const nameOptions = [
-        { value: 'wedding', label: 'Wedding' },
-        { value: 'babyphots', label: 'Baby Photos' },
-        { value: 'events', label: 'Events' },
-        { value: 'nature', label: 'Nature' },
-        { value: 'travel', label: 'Travel' },
-        { value: 'drone', label: 'Drone' }
-    ];
+    if (Object.keys(errors).length === 0) {
+      console.log("formdata", formData);
+      try {
+        const response = await axios.post("http://localhost:3060/api/serviceProvider", formData, {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        });
+        console.log(response.data);
+        navigate("/gallery");
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      setForm({ ...form });
+    }
+  };
 
-    // const handleCategoriesChange = (index, selectedOption) => {
-    //     console.log(selectedOption)
-    //     // console.log(index , selectedOption)
-    //     // const updatedCategories = [...form.categories];
-    //     // updatedCategories[index].name = selectedOption.value;
-    //     // setForm({ ...form, categories: updatedCategories });
-    //     setForm({...form, name: selectedOption.value})
-    // };
+  const serviceTypeOptions = [
+    { value: "photography", label: "Photography" },
+    { value: "videography", label: "Videography" },
+  ];
 
-    // const handleAmountChange = async(e) => {
-    //     // const updatedCategories = [...form.categories];
-    //     // updatedCategories[index].amount = amount.map(option => option.value);
-    //     // setForm({ ...form, categories: updatedCategories });
-    //     // setForm(prevForm => ({
-    //     //     ...prevForm,
-    //     //     categories: prevForm.categories.map((category, index) => {
-    //     //       if (index === 1) {
-    //     //         return {
-    //     //           ...category,
-    //     //           amount: e.target.value
-    //     //         };
-    //     //       }
-    //     //       return category;
-    //     //     })
-    //     //   }));
+  const handleServiceType = (selectedOptions) => {
+    const values = selectedOptions ? selectedOptions.map((option) => option.value) : [];
+    setForm({ ...form, serviceType: values });
+  };
 
-    //     setForm({...form, amount: e.target.value })
-        
-    // };
+  const nameOptions = [
+    { value: "wedding", label: "Wedding" },
+    { value: "babyphots", label: "Baby Photos" },
+    { value: "events", label: "Events" },
+    { value: "nature", label: "Nature" },
+    { value: "travel", label: "Travel" },
+    { value: "drone", label: "Drone" },
+  ];
 
-    const addCategory = () => {
-        // setForm({ ...form, categories: [...form.categories, { name: '', amount: null }] });
-        const categoryObj = {
-            tempId: Number(new Date()),
-            name: form.name, 
-            amount: form.amount 
-        }
-        setForm({...form, categories: [...form.categories, categoryObj], name: '', amount: ''})
+  const addCategory = () => {
+    const categoryObj = {
+      tempId: Number(new Date()),
+      name: form.name,
+      amount: form.amount,
     };
+    setForm({ ...form, categories: [...form.categories, categoryObj], name: "", amount: "" });
+  };
 
-    const handleRemoveCategory =(tempId) => {
-        setForm({...form, categories: form.categories.filter(ele => ele.tempId !== tempId)})
-    }
+  const handleRemoveCategory = (tempId) => {
+    setForm({ ...form, categories: form.categories.filter((ele) => ele.tempId !== tempId) });
+  };
 
-    const handleChange = async(e)=>{
-        const {value, name} = e.target
-        setForm({...form, [name]:value})
-    }
+  const handleChange = (e) => {
+    const { value, name } = e.target;
+    setForm({ ...form, [name]: value });
+  };
 
-    const handleSelectedCategoryChange = (e) =>{
-        console.dir(e.target)
-        const {name,value, id } = e.target
-        console.log(name, value, id)
-        setForm({...form, categories: form.categories.map((ele) => {
-            if(ele.tempId === id) {
-                return {...ele, [name]: value}
-            } else {
-                return {...ele}
-            }
-        })})
-    }
+  const handleSelectedCategoryChange = (e) => {
+    const { name, value, id } = e.target;
+    setForm({
+      ...form,
+      categories: form.categories.map((ele) => (ele.tempId === Number(id) ? { ...ele, [name]: value } : ele)),
+    });
+  };
 
-    return (
-        <div className="form-group">
-            <h3>Service Provider Form</h3>
-            <form onSubmit={handleSubmit}>
-                <label htmlFor="mobile">Add Mobile Number</label><br />
-                <input
-                    type="text"
-                    value={form.mobile}
-                    onChange={handleChange}
-                    name="mobile"
-                    id="mobile"
-                    className="form-control"
-                />
-                <br />
+  // 🎨 Improved UI Layout
+  return (
+    <Container className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+      <div className="shadow-lg p-4 rounded bg-white w-100" style={{ maxWidth: "600px" }}>
+        <h3 className="text-center mb-4">Service Provider Form</h3>
 
-                <label htmlFor="serviceType">Service Type</label><br />
-                <Select
-                    value={serviceTypeOptions.filter((option) => form.serviceType.includes(option.value))}
-                    options={serviceTypeOptions}
-                    isMulti
-                    onChange={handleServiceType}
-                    className="form-control"
-                />
-                <br />
+        <Form onSubmit={handleSubmit}>
+          <Form.Group className="mb-3">
+            <Form.Label>Add Mobile Number</Form.Label>
+            <Form.Control type="text" value={form.mobile} onChange={handleChange} name="mobile" />
+          </Form.Group>
 
-                <label htmlFor='categories'>Categories</label><br />
-                { form.categories.map((category, index) => {
-                   return (
-                    <div>
-                        <select value={category.name} onChange={handleSelectedCategoryChange} name="name" id={category.tempId}>
-                            {nameOptions.map((ele) => {
-                                return <option value={ele.value}>{ ele.label }</option>
-                            })}
-                        </select>
-                        <input type="text" value={category.amount} onChange={handleSelectedCategoryChange} name="amount" id={category.tempId} />
-                        <button onClick={() => {
-                            handleRemoveCategory(category.tempId )
-                        }} >remove</button>
-                    </div>
-                   )
-                })}
-                {/* {form.categories.map((category, index) => (
-                    <div key={index}>
-                        <Select
-                            value={form.name}
-                            options={nameOptions}
-                            onChange={(selectedOption) => handleCategoriesChange(index, selectedOption)}
-                        />
-                        <input
-                            type="text"
-                            value={form.amount}
-                            onChange={handleAmountChange}
-                            name="categories"
-                            id="categories"
-                            className="form-control"
-                        />
-                        <br/>
-                        {index > 0 && <button type="button" onClick={() => removeCategory(index)}>Remove</button>}
-                    </div>
+          <Form.Group className="mb-3">
+            <Form.Label>Service Type</Form.Label>
+            <Select
+              value={serviceTypeOptions.filter((option) => form.serviceType.includes(option.value))}
+              options={serviceTypeOptions}
+              isMulti
+              onChange={handleServiceType}
+              className="form-control"
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Categories</Form.Label>
+            {form.categories.map((category) => (
+              <Row key={category.tempId} className="mb-2 align-items-center">
+                <Col>
+                  <Form.Select value={category.name} onChange={handleSelectedCategoryChange} name="name" id={category.tempId}>
+                    {nameOptions.map((ele) => (
+                      <option key={ele.value} value={ele.value}>
+                        {ele.label}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Col>
+                <Col>
+                  <Form.Control type="text" value={category.amount} onChange={handleSelectedCategoryChange} name="amount" id={category.tempId} />
+                </Col>
+                <Col xs="auto">
+                  <Button variant="danger" onClick={() => handleRemoveCategory(category.tempId)}>
+                    Remove
+                  </Button>
+                </Col>
+              </Row>
+            ))}
+          </Form.Group>
+
+          <Row className="mb-3">
+            <Col>
+              <Form.Select value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}>
+                <option value="">Select</option>
+                {nameOptions.map((ele) => (
+                  <option key={ele.value} value={ele.value}>
+                    {ele.label}
+                  </option>
                 ))}
-                <br/>
-                
-                <br /> */}
+              </Form.Select>
+            </Col>
+            <Col>
+              <Form.Control type="text" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} />
+            </Col>
+            <Col xs="auto">
+              <Button variant="info" onClick={addCategory}>
+                Add Category
+              </Button>
+            </Col>
+          </Row>
 
-                <select value={form.name} onChange={(e) => { setForm({...form, name: e.target.value })}}>
-                    <option value="">select</option>
-                    { nameOptions.map((ele) => {
-                        return <option value={ele.value}> { ele.label } </option> 
-                    })}
-                </select>
-                <input type="text" value={form.amount} onChange={(e) => { setForm({...form, amount: e.target.value }) }} /> 
-                <button type="button" onClick={addCategory}>Add Category</button>
-                <label htmlFor="socialLinks">Social media links</label><br />
-                <input
-                    type="text"
-                    value={form.socialLinks}
-                    onChange={handleChange}
-                    name="socialLinks"
-                    id="socialLinks"
-                    className="form-control"
-                />
-                <br />
+          <Form.Group className="mb-3">
+            <Form.Label>Social Media Links</Form.Label>
+            <Form.Control type="text" value={form.socialLinks} onChange={handleChange} name="socialLinks" />
+          </Form.Group>
 
-                <label htmlFor="location">Add Location</label><br />
-                <input
-                    type="text"
-                    value={form.location}
-                    onChange={handleChange}
-                    name="location"
-                    id="location"
-                    className="form-control"
-                />
-                <br />
+          <Form.Group className="mb-3">
+            <Form.Label>Add Location</Form.Label>
+            <Form.Control type="text" value={form.location} onChange={handleChange} name="location" />
+          </Form.Group>
 
-                <br />
-                <input type="Submit" />
-            </form>
-        </div>
-    )
+          <div className="text-center">
+            <Button variant="primary" type="submit" className="w-100">
+              Submit
+            </Button>
+          </div>
+        </Form>
+      </div>
+    </Container>
+  );
 }
