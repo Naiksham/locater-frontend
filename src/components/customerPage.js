@@ -8,6 +8,7 @@ export default function CustomerPage() {
     const [serviceProvider, setServiceProvider] = useState(null);
     const [error, setError] = useState(null);
 
+    // Fetch service provider data
     useEffect(() => {
         const fetchServiceProvider = async () => {
             console.log("Captured ID:", id);
@@ -42,38 +43,51 @@ export default function CustomerPage() {
     if (!serviceProvider) return <p>Loading...</p>;
 
     return (
-        <div>
-            <h3>Customer Page</h3>
-            <h1>Service Provider Details</h1>
-            <h3>{serviceProvider.name}</h3>
-            <p>Mobile: {serviceProvider.mobile}</p>
-            <p>Service Type: {serviceProvider.serviceType.join(", ")}</p>
-            <p>Social Links: {serviceProvider.socialLinks}</p>
-            <p>Location: {serviceProvider.location}</p>
+        <div style={{ padding: "20px", backgroundColor: "#f9f9f9", borderRadius: "10px", boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)" }}>
+            <h3 style={{ color: "#333" }}>Customer Page</h3>
+            <h1 style={{ color: "#444" }}>Service Provider Details</h1>
 
-            {/* Display Gallery Images */}
-            {serviceProvider.gallery && (
+            <h3>{serviceProvider.name || "No name provided"}</h3>
+            <p><b>Mobile:</b> {serviceProvider.mobile || "Not provided"}</p>
+
+            {/* ✅ Safely render Service Type */}
+            <p>
+                <b>Service Type:</b>{" "}
+                {Array.isArray(serviceProvider?.serviceType) && serviceProvider.serviceType.length > 0
+                    ? serviceProvider.serviceType.join(", ")
+                    : "No services available"}
+            </p>
+
+            <p><b>Social Links:</b> {serviceProvider.socialLinks || "No social links provided"}</p>
+            <p><b>Location:</b> {serviceProvider.location || "Location not provided"}</p>
+
+            {/* 🎯 Display Gallery Images/Videos */}
+            {serviceProvider.gallery && serviceProvider.gallery.length > 0 ? (
                 <div>
-                    <h3>Gallery</h3>
+                    <h3 style={{ color: "#555", marginTop: "20px" }}>Gallery</h3>
                     {serviceProvider.gallery.map((item, index) => (
-                        <div key={index}>
-                            <h4>{item.title}</h4>
+                        <div key={index} style={{ marginBottom: "10px" }}>
+                            <h4 style={{ color: "#666" }}>{item.title || "Untitled"}</h4>
+
                             {item.galleryImg && (
                                 <img
                                     src={`http://localhost:3060/${item.galleryImg}`}
-                                    alt={item.title}
-                                    style={{ width: "300px", height: "200px", margin: "10px" }}
+                                    alt={item.title || "Gallery Image"}
+                                    style={{ width: "300px", height: "200px", margin: "10px", borderRadius: "8px" }}
                                 />
                             )}
+
                             {item.galleryVideo && (
                                 <video controls width="300" height="200" src={`http://localhost:3060/${item.galleryVideo}`} />
                             )}
                         </div>
                     ))}
                 </div>
+            ) : (
+                <p>No gallery items available</p>
             )}
 
-            {/* Invoice Button */}
+            {/* ✅ Invoice Button */}
             <button onClick={handleInvoice} className="btn btn-success" style={{ marginTop: "10px" }}>
                 Generate Invoice
             </button>

@@ -1,92 +1,62 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
-const ServiceProviderDetails = () => {
-    const [serviceProvider, setServiceProvider] = useState(null);
-    const [error, setError] = useState(null);
-    const { id } = useParams(); // Get 'id' from URL
+export default function ServiceProviderDetails() {
+  const { id } = useParams();
+  const [serviceProvider, setServiceProvider] = useState(null);
 
-    useEffect(() => {
-        const fetchServiceProvider = async () => {
-            try {
-                const response = await axios.get(`http://localhost:3060/api/serviceProvider/${id}`, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                });
+  useEffect(() => {
+    const fetchDetails = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3060/api/serviceProvider/${id}`, {
+          headers: { Authorization: localStorage.getItem("token") },
+        });
+        setServiceProvider(response.data);
+      } catch (error) {
+        console.log("Error fetching details:", error);
+      }
+    };
+    fetchDetails();
+  }, [id]);
 
-                if (response.status === 200) {
-                    setServiceProvider(response.data);
-                } else {
-                    setError("Service provider not found.");
-                }
-            } catch (err) {
-                console.error("Error fetching service provider details:", err);
-                setError(err.response?.data?.message || "Failed to fetch service provider details. Please try again.");
-            }
-        };
+  if (!serviceProvider) return <p>Loading...</p>;
 
-        fetchServiceProvider();
-    }, [id]);
+  return (
+    <div className="service-provider-details">
+      <h2>{serviceProvider.name || "Service provider Details"}</h2>
 
-    if (error) return <p style={{ color: "red" }}>{error}</p>;
-    if (!serviceProvider) return <p>Loading...</p>;
+      <p><b>📲 Mobile:</b> {serviceProvider.mobile || "N/A"}</p>
 
-    console.log(serviceProvider);
+      <p><b>📍 Location:</b> {serviceProvider.location || "N/A"}</p>
 
-    // Helper function to build full file URLs
-    const getFullFileUrl = (path) => `http://localhost:3060/${path.replace("app/", "")}`;
+      <p>
+        <b>🔗 Social Links:</b>{" "}
+        {serviceProvider.socialLinks ? (
+          <a href={serviceProvider.socialLinks} target="_blank" rel="noopener noreferrer">
+            {serviceProvider.socialLinks}
+          </a>
+        ) : (
+          "N/A"
+        )}
+      </p>
 
-    return (
-        <div style={{ padding: "20px", backgroundColor: "#f4f4f4", borderRadius: "10px", boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)" }}>
-            <h1 style={{ color: "#333" }}>Service Provider Details</h1>
-            <h3>{serviceProvider.name}</h3>
+      <p><b>🔧 Service Type:</b> {serviceProvider.serviceType?.join(", ") || "N/A"}</p>
 
-            <p><b>Mobile:</b> {serviceProvider.mobile}</p>
-            <p><b>Service Type:</b> {serviceProvider.serviceType.join(", ")}</p>
-            <p><b>Social Links:</b> {serviceProvider.socialLinks}</p>
-            <p><b>Location:</b> {serviceProvider.location}</p>
+      <p><b>📸 Categories:</b></p>
+      {serviceProvider.categories?.length > 0 ? (
+        <ul>
+          {serviceProvider.categories.map((cat, index) => (
+            <li key={index}>
+              {cat.name} — ₹{cat.amount}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No categories added.</p>
+      )}
 
-            {/* 🎯 Gallery Section */}
-            {serviceProvider.gallery && (
-                <div>
-                    <h3 style={{ color: "#555", marginTop: "20px" }}>Gallery</h3>
-
-                    {/* Display Image */}
-                    {serviceProvider.gallery.galleryImg && (
-                        <img
-                            src={getFullFileUrl(serviceProvider.gallery.galleryImg)}
-                            alt="Gallery"
-                            style={{
-                                width: "300px",
-                                borderRadius: "8px",
-                                marginBottom: "10px",
-                                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                            }}
-                        />
-                    )}
-
-                    {/* Display Video */}
-                    {serviceProvider.gallery.galleryVideo && (
-                        <div>
-                            <h4 style={{ marginTop: "10px", color: "#555" }}>Video</h4>
-                            <video
-                                controls
-                                style={{ width: "300px", borderRadius: "8px" }}
-                            >
-                                <source
-                                    src={getFullFileUrl(serviceProvider.gallery.galleryVideo)}
-                                    type="video/mp4"
-                                />
-                                Your browser does not support the video tag.
-                            </video>
-                        </div>
-                    )}
-                </div>
-            )}
-        </div>
-    );
-};
-
-export default ServiceProviderDetails;
+      <p><b>💰 Price Range:</b> {serviceProvider.amount ? `₹${serviceProvider.amount}` : "N/A"}</p>
+    </div>
+  );
+}
